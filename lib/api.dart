@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future<List<Story>> fetchPost() async {
+Future<List<Story>> fetchStories() async {
   final response = await http.get('https://newsapi.org/v2/top-headlines?country=us&apiKey=141960a854224ca88c06fe92789eb272');
-  List responseJson = jsonDecode(response.body).articles;
-  return responseJson.map((story) => new Story.fromJson(story)).toList();
+  NewsJSON responseJson = NewsJSON.fromJson(jsonDecode(response.body));
+  return responseJson.articles.map((story) => story).toList();
 }
 
 class Source {
@@ -22,6 +22,19 @@ class Source {
       'id': id,
       'name': name,
     };
+}
+
+class NewsJSON {
+  final List<Story> articles;
+
+  NewsJSON({this.articles});
+
+  factory NewsJSON.fromJson(Map<String, List<Story>> json) {
+    return NewsJSON(
+      articles: json['articles'],
+    );
+  }
+    // : articles = json['articles'];
 }
 
 class Story {

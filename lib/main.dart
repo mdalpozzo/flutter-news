@@ -56,21 +56,6 @@ class RandomWordsState extends State<RandomWords> {
     );
   }
 
-  Widget _buildSuggestions() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemBuilder: (context, i) {
-        if (i.isOdd) return Divider();
-
-        final index = i ~/ 2;
-        if (index >= _suggestions.length) {
-          _suggestions.addAll(generateWordPairs().take(10));
-        }
-        return _buildRow(_suggestions[index]);
-      }
-    );
-  }
-
   Widget _buildRow(WordPair pair) {
     final bool alreadySaved = _saved.contains(pair);
     return ListTile(
@@ -94,16 +79,41 @@ class RandomWordsState extends State<RandomWords> {
     );
   }
 
+  Widget _buildSuggestions() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemBuilder: (context, i) {
+        if (i.isOdd) return Divider();
+
+        final index = i ~/ 2;
+        if (index >= _suggestions.length) {
+          _suggestions.addAll(generateWordPairs().take(10));
+        }
+        return _buildRow(_suggestions[index]);
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Startup Name Generator'),
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
-        ],
-      ),
-      body: _buildSuggestions(),
+    return new FutureBuilder<dynamic>(
+      future: fetchStories(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return Container();
+        List<dynamic> stories = snapshot.data;
+        return new ListView(
+          children: stories.map((story) => Text(story.title)).toList(),
+        );
+      },
     );
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     title: Text('Startup Name Generator'),
+    //     actions: <Widget>[
+    //       IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
+    //     ],
+    //   ),
+    //   body: _buildSuggestions(),
+    // );
   }
 }
