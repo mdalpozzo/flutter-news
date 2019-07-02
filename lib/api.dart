@@ -4,7 +4,21 @@ import 'package:http/http.dart' as http;
 Future<List<Story>> fetchStories() async {
   final response = await http.get('https://newsapi.org/v2/top-headlines?country=us&apiKey=141960a854224ca88c06fe92789eb272');
   NewsJSON responseJson = NewsJSON.fromJson(jsonDecode(response.body));
-  return responseJson.articles.map((story) => story).toList();
+  return responseJson.articles;
+}
+
+class NewsJSON {
+  final List<Story> articles;
+
+  NewsJSON({this.articles});
+
+  factory NewsJSON.fromJson(Map<String, dynamic> json) {
+    var list = json['articles'] as List;
+    List<Story> storyList = list.map((story) => Story.fromJson(story)).toList();
+    return NewsJSON(
+      articles: storyList,
+    );
+  }
 }
 
 class Source {
@@ -22,19 +36,6 @@ class Source {
       'id': id,
       'name': name,
     };
-}
-
-class NewsJSON {
-  final List<Story> articles;
-
-  NewsJSON({this.articles});
-
-  factory NewsJSON.fromJson(Map<String, List<Story>> json) {
-    return NewsJSON(
-      articles: json['articles'],
-    );
-  }
-    // : articles = json['articles'];
 }
 
 class Story {
@@ -63,7 +64,7 @@ class Story {
       content = json['content'],
       description = json['description'],
       publishedAt = json['publishedAt'],
-      source = json['source'],
+      source = Source.fromJson(json['source']),
       title = json['title'],
       url = json['url'],
       urlToImage = json['urlToImage'];

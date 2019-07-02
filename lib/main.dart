@@ -96,11 +96,11 @@ class RandomWordsState extends State<RandomWords> {
 
   @override
   Widget build(BuildContext context) {
-    return new FutureBuilder<dynamic>(
+    return new FutureBuilder<List<Story>>(
       future: fetchStories(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return Container();
-        List<dynamic> stories = snapshot.data;
+        List<Story> stories = snapshot.data;
         return new ListView(
           children: stories.map((story) => Text(story.title)).toList(),
         );
